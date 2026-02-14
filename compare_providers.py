@@ -153,7 +153,6 @@ def generate_replicate(prompt: str, output_path: Path) -> dict:
             "https://api.replicate.com/v1/models/black-forest-labs/flux-schnell/predictions",
             headers=headers,
             json={
-                "version": "black-forest-labs/flux-schnell",
                 "input": {
                     "prompt": prompt,
                     "num_outputs": 1,
@@ -165,10 +164,21 @@ def generate_replicate(prompt: str, output_path: Path) -> dict:
 
         prediction = response.json()
 
+        # Debug: Print initial prediction response
+        print(f"DEBUG: Initial prediction response: {prediction}")
+
         # Poll for completion
         while prediction.get("status") not in ("succeeded", "failed", "canceled"):
             time.sleep(2)
-            poll = requests.get(prediction["urls"]["get"], headers=headers)
+            poll_url = prediction.get("urls", {}).get("get")
+            if not poll_url:
+                return {
+                    "status": "error",
+                    "reason": "Missing 'urls' in prediction response",
+                    "response": prediction,  # Log the full prediction response for debugging
+                }
+
+            poll = requests.get(poll_url, headers=headers)
             prediction = poll.json()
 
         elapsed = time.time() - start
