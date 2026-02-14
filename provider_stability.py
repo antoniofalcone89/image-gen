@@ -1,0 +1,72 @@
+#!/usr/bin/env python3
+"""
+Stable Diffusion 3.5 via Stability AI API
+"""
+
+import os
+import time
+import requests
+from pathlib import Path
+from dotenv import load_dotenv
+from shared_config import OUTPUT_DIR, NEGATIVE_PROMPT, get_prompt, setup_output_dir
+
+load_dotenv()
+
+
+def generate_stability(prompt: str, output_path: Path) -> dict:
+    """Stable Diffusion 3.5 via Stability AI API."""
+    api_key = os.getenv("STABILITY_API_KEY")
+    if not api_key:
+        return {"status": "skipped", "reason": "STABILITY_API_KEY not set"}
+
+    try:
+        start = time.time()
+
+        response = requests.post(
+            "https://api.stability.ai/v2beta/stable-image/generate/sd3",
+            headers={
+                "Authorization": f"Bearer {api_key}",
+                "Accept": "image/*",
+            },
+            files={"none": ""},
+            data={
+                "prompt": prompt,
+                "negative_prompt": NEGATIVE_PROMPT,
+                "output_format": "jpeg",
+                "aspect_ratio": "1:1",
+            },
+        )
+
+        elapsed = time.time() - start
+
+        if response.status_code == 200:
+            output_path.write_bytes(response.content)
+            return {
+                "status": "success",
+                "time_seconds": round(elapsed, 1),
+                "cost_estimate": "$0.030",
+            }
+        else:
+            return {"status": "error", "reason": f"HTTP {response.status_code}: {response.text[:200]}"}
+
+    except Exception as e:
+        return {"status": "error", "reason": str(e)}
+
+
+if __name__ == "__main__":
+    setup_output_dir()
+    
+    animal = "donkey"
+    prompt = get_prompt(animal)
+    output_path = OUTPUT_DIR / f"{animal}_stability.png"
+    
+    print(f"Generating image for {animal}...")
+    result = generate_stability(prompt, output_path)
+    
+    print(f"Status: {result['status']}")
+    if result["status"] == "success":
+        print(f"Time: {result['time_seconds']}s")
+        print(f"Cost: {result['cost_estimate']}")
+        print(f"Output: {output_path}")
+    else:
+        print(f"Error: {result['reason']}")

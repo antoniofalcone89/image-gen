@@ -1,0 +1,70 @@
+#!/usr/bin/env python3
+"""
+DALL-E 3 via OpenAI API
+"""
+
+import os
+import time
+import requests
+from pathlib import Path
+from dotenv import load_dotenv
+from shared_config import OUTPUT_DIR, IMAGE_SIZE, get_prompt, setup_output_dir
+
+load_dotenv()
+
+
+def generate_openai(prompt: str, output_path: Path) -> dict:
+    """DALL-E 3 via OpenAI API."""
+    from openai import OpenAI
+
+    api_key = os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        return {"status": "skipped", "reason": "OPENAI_API_KEY not set"}
+
+    try:
+        client = OpenAI()
+        start = time.time()
+
+        response = client.images.generate(
+            model="dall-e-3",
+            prompt=prompt,
+            size=f"{IMAGE_SIZE}x{IMAGE_SIZE}",
+            quality="standard",
+            n=1,
+        )
+
+        elapsed = time.time() - start
+        image_url = response.data[0].url
+        image_data = requests.get(image_url).content
+        output_path.write_bytes(image_data)
+
+        # DALL-E 3 sometimes revises your prompt — capture it
+        revised_prompt = response.data[0].revised_prompt
+
+        return {
+            "status": "success",
+            "time_seconds": round(elapsed, 1),
+            "revised_prompt": revised_prompt,
+            "cost_estimate": "$0.040",
+        }
+    except Exception as e:
+        return {"status": "error", "reason": str(e)}
+
+
+if __name__ == "__main__":
+    setup_output_dir()
+    
+    animal = "donkey"
+    prompt = get_prompt(animal)
+    output_path = OUTPUT_DIR / f"{animal}_openai.png"
+    
+    print(f"Generating image for {animal}...")
+    result = generate_openai(prompt, output_path)
+    
+    print(f"Status: {result['status']}")
+    if result["status"] == "success":
+        print(f"Time: {result['time_seconds']}s")
+        print(f"Cost: {result['cost_estimate']}")
+        print(f"Output: {output_path}")
+    else:
+        print(f"Error: {result['reason']}")
