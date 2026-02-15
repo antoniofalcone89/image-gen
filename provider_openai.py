@@ -52,19 +52,22 @@ def generate_openai(prompt: str, output_path: Path) -> dict:
 
 
 if __name__ == "__main__":
+    from shared_config import TEST_ANIMALS
+    
     setup_output_dir()
     
-    animal = "donkey"
-    prompt = get_prompt(animal)
-    output_path = OUTPUT_DIR / f"{animal}_openai.png"
-    
-    print(f"Generating image for {animal}...")
-    result = generate_openai(prompt, output_path)
-    
-    print(f"Status: {result['status']}")
-    if result["status"] == "success":
-        print(f"Time: {result['time_seconds']}s")
-        print(f"Cost: {result['cost_estimate']}")
-        print(f"Output: {output_path}")
-    else:
-        print(f"Error: {result['reason']}")
+    for animal in TEST_ANIMALS:
+        prompt = get_prompt(animal)
+        output_path = OUTPUT_DIR / f"{animal}_openai.png"
+        
+        print(f"Generating image for {animal}...")
+        result = generate_openai(prompt, output_path)
+        
+        print(f"Status: {result['status']}")
+        if result["status"] == "success":
+            print(f"Time: {result['time_seconds']}s")
+            print(f"Cost: {result['cost_estimate']}")
+            print(f"Output: {output_path}")
+        else:
+            print(f"Error: {result['reason']}")
+        print()
