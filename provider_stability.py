@@ -56,6 +56,7 @@ def generate_stability(prompt: str, output_path: Path) -> dict:
 
 if __name__ == "__main__":
     from shared_config import TEST_ANIMALS
+    print(f"Generating {len(TEST_ANIMALS)} animals...")
     
     setup_output_dir()
     
