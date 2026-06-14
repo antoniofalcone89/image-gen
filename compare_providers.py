@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Animal Quiz Academy — Image Provider Comparison Script
+Animals Quiz Academy — Image Provider Comparison Script
 
 Generates the SAME animal image using all three providers so you can
 compare style, quality, and consistency side by side.
@@ -214,7 +214,7 @@ def run_comparison():
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
     print("=" * 60)
-    print("  Animal Quiz Academy — Provider Comparison")
+    print("  Animals Quiz Academy — Provider Comparison")
     print("=" * 60)
     print(f"\n  Test animals : {', '.join(TEST_ANIMALS)}")
     print(f"  Providers    : {', '.join(PROVIDERS.keys())}")

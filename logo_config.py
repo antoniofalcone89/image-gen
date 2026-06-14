@@ -1,5 +1,5 @@
 """
-Configuration for generating the Animal Quiz Academy app logo.
+Configuration for generating the Animals Quiz Academy app logo.
 """
 
 # Logo generation prompt
