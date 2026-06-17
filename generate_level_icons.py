@@ -133,6 +133,25 @@ LEVEL_ICONS: dict[int, dict] = {
             "Photorealistic wildlife photography style, high detail, high resolution."
         ),
     },
+    103: {
+        "filename": "level_dino_world.png",
+        "prompt": (
+            "Ultra-realistic close-up picture of a clearly recognizable T-Rex in a funny situation: "
+            "at a packed prehistoric rock concert, absolutely shredding an imaginary air guitar solo "
+            "with full rock-star energy — head thrown back, eyes closed in passion — except its tiny "
+            "arms can only wiggle uselessly a few centimetres from its body, nowhere near forming any "
+            "guitar shape. A crowd of smaller dinosaurs in the background looks politely confused. "
+            "The T-Rex must be immediately identifiable for an animal trivia quiz. "
+            "The T-Rex's gaze must be ironic and funny. "
+            "The full head, tiny arms, and key species features are clearly visible and anatomically accurate. "
+            "The T-Rex is centered and fully identifiable at first glance. "
+            "Bright natural daylight, blue sky with soft clouds in the background, "
+            "subtle hints of a prehistoric fern landscape with distant volcanoes. "
+            "Sharp focus, detailed skin texture, realistic lighting and shadows. "
+            "Playful and confident expression, but still realistic. "
+            "Photorealistic wildlife photography style, high detail, high resolution."
+        ),
+    },
 }
 
 

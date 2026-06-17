@@ -8,14 +8,14 @@ import time
 import requests
 from pathlib import Path
 from dotenv import load_dotenv
-from logo_config import LOGO_OUTPUT_DIR, get_logo_prompt, setup_logo_output_dir
-from shared_config import OUTPUT_DIR, IMAGE_SIZE, get_prompt, setup_output_dir
+from shared_config import OUTPUT_DIR, IMAGE_SIZE, DINO_SCENARIOS, get_prompt, setup_output_dir
 
 load_dotenv()
 
 
 def generate_openai(prompt: str, output_path: Path) -> dict:
-    """DALL-E 3 via OpenAI API."""
+    """gpt-image-1 via OpenAI API."""
+    import base64
     from openai import OpenAI
 
     api_key = os.getenv("OPENAI_API_KEY")
@@ -27,73 +27,50 @@ def generate_openai(prompt: str, output_path: Path) -> dict:
         start = time.time()
 
         response = client.images.generate(
-            model="dall-e-3",
+            model="gpt-image-1",
             prompt=prompt,
             size=f"{IMAGE_SIZE}x{IMAGE_SIZE}",
-            quality="standard",
+            quality="medium",
             n=1,
         )
 
         elapsed = time.time() - start
-        image_url = response.data[0].url
-        image_data = requests.get(image_url).content
+        image_data = base64.b64decode(response.data[0].b64_json)
         output_path.write_bytes(image_data)
-
-        # DALL-E 3 sometimes revises your prompt — capture it
-        revised_prompt = response.data[0].revised_prompt
 
         return {
             "status": "success",
             "time_seconds": round(elapsed, 1),
-            "revised_prompt": revised_prompt,
-            "cost_estimate": "$0.040",
+            "cost_estimate": "$0.042",
         }
     except Exception as e:
         return {"status": "error", "reason": str(e)}
 
 
 if __name__ == "__main__":
-    from shared_config import TEST_ANIMALS
-    
-    #setup_output_dir()
-    setup_logo_output_dir()
+    import sys
 
-    prompt = get_logo_prompt()
-    print(f"Generating logo with this prompt: {prompt}")
-    time.sleep(1)
-      # Small delay to ensure output directory is ready
-    output_path = LOGO_OUTPUT_DIR / "logo_openai.png"
-    if output_path.exists():
-        counter = 1
-        while True:
-            candidate = LOGO_OUTPUT_DIR / f"logo_openai_{counter}.png"
-            if not candidate.exists():
-                output_path = candidate
-                break
-            counter += 1
-    print(f"Generating logo with OpenAI...")
-    result = generate_openai(prompt, output_path)
-    print(f"Status: {result['status']}")
-    if result["status"] == "success":
-            print(f"Time: {result['time_seconds']}s")
-            print(f"Cost: {result['cost_estimate']}")
-            print(f"Output: {output_path}")
-    else:
-            print(f"Error: {result['reason']}")
-    print()
-    
-    # for animal in TEST_ANIMALS:
-    #     prompt = get_prompt(animal)
-    #     output_path = OUTPUT_DIR / f"{animal}_openai.png"
-        
-    #     print(f"Generating image for {animal}...")
-    #     result = generate_openai(prompt, output_path)
-        
-    #     print(f"Status: {result['status']}")
-    #     if result["status"] == "success":
-    #         print(f"Time: {result['time_seconds']}s")
-    #         print(f"Cost: {result['cost_estimate']}")
-    #         print(f"Output: {output_path}")
-    #     else:
-    #         print(f"Error: {result['reason']}")
-    #     print()
+    setup_output_dir()
+
+    animals = sys.argv[1:] if len(sys.argv) > 1 else list(DINO_SCENARIOS.keys())
+
+    unknown = [a for a in animals if get_prompt(a) == get_prompt("__missing__")]
+    if unknown:
+        print(f"Warning: no scenario found for: {', '.join(unknown)} — using fallback prompt")
+
+    total_cost = 0.042 * len(animals)
+    print(f"Generating {len(animals)} image(s) (~${total_cost:.2f} estimated)\n")
+
+    for animal in animals:
+        prompt = get_prompt(animal)
+        output_path = OUTPUT_DIR / f"{animal}_openai.png"
+
+        print(f"Generating {animal}...")
+        result = generate_openai(prompt, output_path)
+
+        if result["status"] == "success":
+            print(f"  ✓ {result['time_seconds']}s — {output_path}")
+        else:
+            print(f"  ✗ {result['reason']}")
+
+    print(f"\nDone. Images saved to {OUTPUT_DIR}/")
