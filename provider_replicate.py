@@ -1,14 +1,10 @@
-#!/usr/bin/env python3
-"""
-Flux Schnell via Replicate API (fast & cheap)
-"""
+"""Flux Schnell (Replicate) provider — import and call generate_replicate()."""
 
 import os
 import time
 import requests
 from pathlib import Path
 from dotenv import load_dotenv
-from shared_config import OUTPUT_DIR, get_prompt, setup_output_dir
 
 load_dotenv()
 
@@ -73,23 +69,3 @@ def generate_replicate(prompt: str, output_path: Path) -> dict:
         return {"status": "error", "reason": str(e)}
 
 
-if __name__ == "__main__":
-    from shared_config import TEST_ANIMALS
-    
-    setup_output_dir()
-    
-    for animal in TEST_ANIMALS:
-        prompt = get_prompt(animal)
-        output_path = OUTPUT_DIR / f"{animal}_replicate.png"
-        
-        print(f"Generating image for {animal}...")
-        result = generate_replicate(prompt, output_path)
-        
-        print(f"Status: {result['status']}")
-        if result["status"] == "success":
-            print(f"Time: {result['time_seconds']}s")
-            print(f"Cost: {result['cost_estimate']}")
-            print(f"Output: {output_path}")
-        else:
-            print(f"Error: {result['reason']}")
-        print()

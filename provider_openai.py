@@ -1,14 +1,10 @@
-#!/usr/bin/env python3
-"""
-DALL-E 3 via OpenAI API
-"""
+"""DALL-E 3 (gpt-image-1) provider — import and call generate_openai()."""
 
 import os
 import time
-import requests
 from pathlib import Path
 from dotenv import load_dotenv
-from shared_config import OUTPUT_DIR, IMAGE_SIZE, DINO_SCENARIOS, get_prompt, setup_output_dir
+from shared_config import IMAGE_SIZE
 
 load_dotenv()
 
@@ -47,30 +43,3 @@ def generate_openai(prompt: str, output_path: Path) -> dict:
         return {"status": "error", "reason": str(e)}
 
 
-if __name__ == "__main__":
-    import sys
-
-    setup_output_dir()
-
-    animals = sys.argv[1:] if len(sys.argv) > 1 else list(DINO_SCENARIOS.keys())
-
-    unknown = [a for a in animals if get_prompt(a) == get_prompt("__missing__")]
-    if unknown:
-        print(f"Warning: no scenario found for: {', '.join(unknown)} — using fallback prompt")
-
-    total_cost = 0.042 * len(animals)
-    print(f"Generating {len(animals)} image(s) (~${total_cost:.2f} estimated)\n")
-
-    for animal in animals:
-        prompt = get_prompt(animal)
-        output_path = OUTPUT_DIR / f"{animal}_openai.png"
-
-        print(f"Generating {animal}...")
-        result = generate_openai(prompt, output_path)
-
-        if result["status"] == "success":
-            print(f"  ✓ {result['time_seconds']}s — {output_path}")
-        else:
-            print(f"  ✗ {result['reason']}")
-
-    print(f"\nDone. Images saved to {OUTPUT_DIR}/")

@@ -1,14 +1,11 @@
-#!/usr/bin/env python3
-"""
-Stable Diffusion 3.5 via Stability AI API
-"""
+"""Stable Diffusion 3.5 (Stability AI) provider — import and call generate_stability()."""
 
 import os
 import time
 import requests
 from pathlib import Path
 from dotenv import load_dotenv
-from shared_config import OUTPUT_DIR, NEGATIVE_PROMPT, get_prompt, setup_output_dir
+from shared_config import NEGATIVE_PROMPT
 
 load_dotenv()
 
@@ -54,24 +51,3 @@ def generate_stability(prompt: str, output_path: Path) -> dict:
         return {"status": "error", "reason": str(e)}
 
 
-if __name__ == "__main__":
-    from shared_config import TEST_ANIMALS
-    print(f"Generating {len(TEST_ANIMALS)} animals...")
-    
-    setup_output_dir()
-    
-    for animal in TEST_ANIMALS:
-        prompt = get_prompt(animal)
-        output_path = OUTPUT_DIR / f"{animal}_stability.png"
-        
-        print(f"Generating image for {animal}...")
-        result = generate_stability(prompt, output_path)
-        
-        print(f"Status: {result['status']}")
-        if result["status"] == "success":
-            print(f"Time: {result['time_seconds']}s")
-            print(f"Cost: {result['cost_estimate']}")
-            print(f"Output: {output_path}")
-        else:
-            print(f"Error: {result['reason']}")
-        print()

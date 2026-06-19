@@ -100,4 +100,6 @@ To change the style globally, edit `PROMPT_TEMPLATE` and `NEGATIVE_PROMPT` in `s
 
 ## Output to R2
 
+VPS: `ubuntu@57.129.123.33`
+
 After generating, approved images are uploaded to Cloudflare R2 from the service side (not from this project). The DB `animals.image_url` column stores the resulting `https://storage.afalco.ovh/animals/{uuid}.png` URL. Never rename or delete R2 objects without updating the DB — the UUID is the only link between the file and the DB row.
