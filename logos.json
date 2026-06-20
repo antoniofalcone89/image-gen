@@ -10,5 +10,9 @@
   "dino": {
     "prompt": "Digital illustration of a Dino World game level badge. Circular emblem with a deep jungle green and volcanic orange gradient background. Center features a dramatic T-Rex skull or roaring T-Rex face. Surrounding it, small silhouettes of a Triceratops, a Pterosaur, a Brachiosaurus, and a Velociraptor arranged radially. Outer ring text reads DINO WORLD in bold stone-carved letters with a cracked texture. Lava glow and tropical ferns frame the badge. Style: flat vector illustration with dramatic glow effects, suitable for a mobile game UI badge. Cinematic lighting, vibrant colors, high contrast, polished animated film style, centered framing, high resolution, sharp details, professional branding quality.",
     "negative_prompt": "low resolution, blurry, photorealistic, ugly proportions, horror, watermark, text errors, cluttered composition"
+  },
+  "feathered_wonders": {
+    "prompt": "Digital illustration of a Feathered Wonders game level badge. Circular emblem with a sky-blue and golden-sunrise gradient background. Center features a dramatic lyrebird with its magnificent lyre-shaped tail fully fanned open. Surrounding it, small silhouettes of an owl, a flamingo, a peacock, a toucan, and a hummingbird arranged radially. Outer ring text reads FEATHERED WONDERS in bold sans-serif letters with a feather-etched texture. Soft rays of golden light radiate from behind the lyrebird, suggesting dawn or a spotlight. Style: flat vector illustration with a warm glow, suitable for a mobile game UI badge. Cinematic lighting, vibrant colors, high contrast, polished animated film style, centered framing, high resolution, sharp details, professional branding quality.",
+    "negative_prompt": "low resolution, blurry, photorealistic, ugly proportions, horror, watermark, text errors, cluttered composition, dark background"
   }
 }
