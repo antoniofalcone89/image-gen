@@ -1,7 +1,7 @@
 # image-gen
 
 AI image generation toolbox for the Animals Quiz Academy app.
-Generates 1024×1024 images for animal cards and level logos using OpenAI, Replicate, or Stability AI.
+Generates 1024×1024 images for animal cards and level logos using OpenAI or Replicate.
 Generated images are saved locally, then uploaded to Cloudflare R2 from the service side.
 
 ## Setup
@@ -17,7 +17,6 @@ Create a `.env` file (already in `.gitignore`) with keys for the provider(s) you
 ```
 OPENAI_API_KEY=sk-...
 REPLICATE_API_TOKEN=r8_...
-STABILITY_API_KEY=sk-...
 ```
 
 ## Generating animal images
@@ -28,13 +27,15 @@ python generate.py --provider <provider> --group <group> [animal ...]
 
 | Argument | Default | Description |
 |----------|---------|-------------|
-| `--provider` | `openai` | `openai`, `replicate`, or `stability` |
+| `--provider` | `openai` | `openai` or `replicate` |
 | `--group` | — | Animal group to generate (required) |
 | `animals` | all | One or more animal names within the group |
 
 ```bash
-# Generate all animals in a group
+# Generate all animals in a group (OpenAI by default)
 python generate.py --group arctic_wonders
+
+# Generate with Replicate instead (cheaper, good for bulk drafts)
 python generate.py --provider replicate --group arctic_wonders
 
 # Generate a single animal
@@ -50,9 +51,10 @@ Output is saved to `image-gen/<group>/<Animal>.png`.
 
 | Group | Animals | Description |
 |-------|---------|-------------|
-| `main` | 150 | All standard game animals |
+| `main` | 149 | All standard game animals |
 | `dino` | 20 | Dino World bonus level |
-| `arctic_wonders` | 15 | Arctic Wonders bonus level |
+| `arctic_wonders` | 23 | Frozen Kingdom bonus level |
+| `feathered_wonders` | 28 | Wings & Beaks bonus level |
 
 ## Generating level logos
 
@@ -64,7 +66,7 @@ python generate.py --provider <provider> --logo <level>
 python generate.py --logo arctic_wonders
 python generate.py --logo dino
 python generate.py --logo app
-python generate.py --provider stability --logo arctic_wonders
+python generate.py --provider replicate --logo arctic_wonders
 ```
 
 Output is saved to `image-gen/logo_output/<level>.png`.
@@ -142,7 +144,8 @@ image-gen/
 ├── scenarios/               # One JSON file per animal group
 │   ├── main.json
 │   ├── dino.json
-│   └── arctic_wonders.json
+│   ├── arctic_wonders.json
+│   └── feathered_wonders.json
 ├── logos.json               # One entry per level logo (app, arctic_wonders, dino, …)
 ├── logo_output/             # Generated logo images, one per level
 ├── <group_name>/            # Generated animal images, one folder per group
@@ -151,9 +154,7 @@ image-gen/
 ├── shared_config.py         # Loads scenarios/, exposes GROUPS + get_prompt()
 ├── logo_config.py           # Loads logos.json, exposes LOGOS + get_logo_prompt()
 ├── provider_openai.py       # generate_openai() — gpt-image-1
-├── provider_replicate.py    # generate_replicate() — Flux Schnell
-├── provider_stability.py    # generate_stability() — Stable Diffusion 3.5
-└── compare_providers.py     # Side-by-side provider comparison for a given animal
+└── provider_replicate.py    # generate_replicate() — Flux Schnell
 ```
 
 ## Cost reference
@@ -161,7 +162,6 @@ image-gen/
 | Provider | Model | Cost/image |
 |----------|-------|------------|
 | OpenAI | gpt-image-1 (medium) | ~$0.042 |
-| Stability AI | SD 3.5 Large | ~$0.030 |
 | Replicate | Flux Schnell | ~$0.003 |
 
 ## After generating
